@@ -31,21 +31,25 @@ const eventSchema = new Schema<IEvent>(
             type: String,
             required: [true, 'Title is required'],
             trim: true,
+            maxlength: [100, 'Title cannot exceed 100 characters'],
         },
         slug: {
             type: String,
             unique: true,
             index: true,
+            trim: true,
         },
         description: {
             type: String,
             required: [true, 'Description is required'],
             trim: true,
+            maxlength: [1000, 'Description cannot exceed 1000 characters'],
         },
         overview: {
             type: String,
             required: [true, 'Overview is required'],
             trim: true,
+            maxlength: [500, 'Overview cannot exceed 500 characters'],
         },
         image: {
             type: String,
@@ -71,8 +75,11 @@ const eventSchema = new Schema<IEvent>(
         },
         mode: {
             type: String,
-            enum: ['online', 'offline', 'hybrid'],
             required: [true, 'Mode is required'],
+            enum: {
+                values: ['online', 'offline', 'hybrid'],
+                message: 'Mode must be either online, offline, or hybrid',
+            }
         },
         audience: {
             type: String,
