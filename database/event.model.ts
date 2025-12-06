@@ -3,7 +3,7 @@ import mongoose, { Schema, Model, Document } from 'mongoose';
 /**
  * Event document interface for type safety
  */
-interface IEvent extends Document {
+export interface IEvent extends Document {
     title: string;
     slug: string;
     description: string;
