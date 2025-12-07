@@ -95,7 +95,7 @@
 }
 
 @utility text-gradient {
-  @apply to-blue bg-gradient-to-b from-white via-white bg-clip-text font-semibold text-transparent;
+  @apply to-blue bg-linear-to-b from-white via-white bg-clip-text font-semibold text-transparent;
 }
 
 @utility glass {
@@ -204,7 +204,7 @@
       @apply flex w-full flex-col lg:flex-row gap-12 items-start mt-12 max-lg:items-center;
 
       .content {
-        @apply flex flex-[2] flex-col gap-8 max-lg:w-full;
+        @apply flex flex-2 flex-col gap-8 max-lg:w-full;
 
         .banner {
           @apply max-h-[457px] w-full rounded-lg object-cover;
