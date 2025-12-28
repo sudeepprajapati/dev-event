@@ -116,7 +116,7 @@
   }
 
   main {
-    @apply mx-auto container flex flex-col sm:px-10 px-5 py-10;
+    @apply mx-auto container flex flex-col sm:px-10 px-5 py-10 md:mt-0 mt-16;
   }
 
   h1 {
@@ -152,6 +152,10 @@
 
     nav {
       @apply flex flex-row justify-between mx-auto container sm:px-10 px-5 py-4;
+
+      &.hidden {
+        @apply hidden;
+      }
     }
 
     .logo {
@@ -175,7 +179,7 @@
     @apply flex flex-col gap-3;
 
     .poster {
-      @apply h-[300px] w-full rounded-lg object-cover;
+      @apply h-75 w-full rounded-lg object-cover;
     }
 
     .title {
@@ -207,7 +211,7 @@
         @apply flex flex-2 flex-col gap-8 max-lg:w-full;
 
         .banner {
-          @apply max-h-[457px] w-full rounded-lg object-cover;
+          @apply max-h-114.25 w-full rounded-lg object-cover;
         }
 
         .agenda {
