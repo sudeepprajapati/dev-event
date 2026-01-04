@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model, Document } from 'mongoose';
+import mongoose, { Schema, Model, Document, Types } from 'mongoose';
 
 /**
  * Event document interface for type safety
@@ -17,7 +17,9 @@ export interface IEvent extends Document {
     audience: string;
     agenda: string[];
     organizer: string;
+    organizerId: Types.ObjectId;
     tags: string[];
+    price: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -99,6 +101,12 @@ const eventSchema = new Schema<IEvent>(
             required: [true, 'Organizer is required'],
             trim: true,
         },
+        organizerId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: [true, 'Organizer ID is required'],
+            index: true,
+        },
         tags: {
             type: [String],
             required: [true, 'Tags are required'],
@@ -106,6 +114,11 @@ const eventSchema = new Schema<IEvent>(
                 validator: (v: string[]) => v.length > 0,
                 message: 'Tags must have at least one item',
             },
+        },
+        price: {
+            type: Number,
+            required: [true, 'Price is required'],
+            min: [0, 'Price cannot be negative'],
         },
     },
     { timestamps: true }
