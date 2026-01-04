@@ -4,8 +4,6 @@ import type { NextRequest } from "next/server";
 // List of routes to protect
 const protectedRoutes = [
     "/create-event",
-    "/events/:slug",
-    "/events",
 ];
 
 export function middleware(request: NextRequest) {
@@ -18,7 +16,7 @@ export function middleware(request: NextRequest) {
         if (!session) {
             // Redirect to signin page if not authenticated
             const url = request.nextUrl.clone();
-            url.pathname = "/signin";
+            url.pathname = "/auth/signin";
             return NextResponse.redirect(url);
         }
     }
@@ -28,7 +26,5 @@ export function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         "/create-event",
-        "/events/:slug*",
-        "/events",
     ],
 };

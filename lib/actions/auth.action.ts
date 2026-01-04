@@ -92,3 +92,19 @@ export async function signupUser(data: SignupFormData) {
         };
     }
 }
+
+export async function getUserByEmail(email: string) {
+    try {
+        await connectDB();
+        const user = await User.findOne({ email }).lean();
+
+        if (!user) return null;
+
+        return {
+            ...user,
+            _id: user._id.toString(),
+        };
+    } catch {
+        return null;
+    }
+}

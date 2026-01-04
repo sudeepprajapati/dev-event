@@ -1,12 +1,8 @@
 import { IEvent } from "@/database/event.model";
-import { getSimilarEventsBySlug } from "@/lib/actions/event.action";
 import BookEvent from "@/components/BookEvent";
+import BookEventPaid from "@/components/BookEventPaid";
 import EventCard from "@/components/EventCard";
-import { notFound } from "next/navigation";
 import Image from "next/image";
-import { cacheLife } from "next/cache";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const EventDetailItem = ({ icon, alt, label }: { icon: string; alt: string; label: string; }) => (
     <div className="flex-row-gap-2 items-center">
@@ -35,44 +31,12 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 )
 
 
-const EventDetails = async ({ params }: { params: Promise<string> }) => {
-    'use cache'
-    cacheLife('hours');
+const EventDetails = ({ event, similarEvents }: { event: any; similarEvents: IEvent[] }) => {
+    const { description, image, overview, date, time, location, mode, agenda, audience, tags, organizer, price, _id, slug: eventSlug } = event;
 
-    const slug = await params;
-
-
-    let event;
-    try {
-        const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
-            next: { revalidate: 60 }
-        });
-
-        if (!request.ok) {
-            if (request.status === 404) {
-                return notFound();
-            }
-            throw new Error(`Failed to fetch event: ${request.statusText}`);
-        }
-
-        const response = await request.json();
-        event = response.event;
-
-        if (!event) {
-            return notFound();
-        }
-    } catch (error) {
-        console.error('Error fetching event:', error);
-        return notFound();
-    }
-
-    const { description, image, overview, date, time, location, mode, agenda, audience, tags, organizer } = event;
-
-    if (!description) return notFound();
+    if (!description) return null;
 
     const bookings = 10;
-
-    const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
     return (
         <section id="event">
@@ -123,7 +87,11 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
                             <p className="text-sm">Be the first to book your spot!</p>
                         )}
 
-                        <BookEvent eventId={event._id} slug={event.slug} />
+                        {price > 0 ? (
+                            <BookEventPaid eventId={_id} slug={eventSlug} price={price} />
+                        ) : (
+                            <BookEvent eventId={_id} slug={eventSlug} />
+                        )}
                     </div>
                 </aside>
             </div>
@@ -131,7 +99,7 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
             <div className="flex w-full flex-col gap-4 pt-20">
                 <h2>Similar Events</h2>
                 <div className="events">
-                    {similarEvents.length > 0 && similarEvents.map((similarEvent: IEvent) => (
+                    {similarEvents && similarEvents.length > 0 && similarEvents.map((similarEvent: IEvent) => (
                         <EventCard key={similarEvent.title} {...similarEvent} />
                     ))}
                 </div>

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
     Form,
     FormControl,
@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-// Validation schema
 const signinSchema = z.object({
     email: z.string().email("Invalid email address"),
     password: z.string().min(1, "Password is required"),
@@ -26,14 +25,14 @@ const signinSchema = z.object({
 
 type SigninFormValues = z.infer<typeof signinSchema>;
 
-export function SigninForm() {
+interface SigninFormProps {
+    callbackError: string | null;
+}
+
+export function SigninForm({ callbackError }: SigninFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    const searchParams = useSearchParams();
-
-    // Check for error from NextAuth
-    const callbackError = searchParams?.get("error");
 
     const form = useForm<SigninFormValues>({
         resolver: zodResolver(signinSchema),
@@ -57,7 +56,6 @@ export function SigninForm() {
             if (result?.error) {
                 setError(result.error || "Invalid credentials");
             } else if (result?.ok) {
-                // Redirect to home page on successful signin
                 router.push("/");
             }
         } catch (err) {
@@ -141,7 +139,7 @@ export function SigninForm() {
                     <p className="text-sm text-color-light-200">
                         Don't have an account?{" "}
                         <Link
-                            href="/signup"
+                            href="/auth/signup"
                             className="text-color-blue hover:text-color-light-100 transition-colors font-semibold"
                         >
                             Sign Up

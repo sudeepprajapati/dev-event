@@ -69,7 +69,7 @@ export function SignupForm() {
                 form.reset();
                 // Redirect to signin page after 1.5 seconds
                 setTimeout(() => {
-                    router.push("/signin");
+                    router.push("/auth/signin");
                 }, 1500);
             } else {
                 setError(result.error || "Signup failed");
@@ -199,7 +199,7 @@ export function SignupForm() {
                     <p className="text-sm text-color-light-200">
                         Already have an account?{" "}
                         <Link
-                            href="/signin"
+                            href="/auth/signin"
                             className="text-color-blue hover:text-color-light-100 transition-colors font-semibold"
                         >
                             Sign In

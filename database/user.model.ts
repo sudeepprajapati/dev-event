@@ -1,7 +1,7 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Types } from "mongoose";
 
 export interface IUser extends Document {
-    _id: string;
+    _id: Types.ObjectId;
     name: string;
     email: string;
     password: string;
@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser>(
             type: String,
             required: [true, "Please provide a password"],
             minlength: [6, "Password must be at least 6 characters"],
-            select: false, // Don't return password by default
+            select: false,
         },
     },
     {
