@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface DeleteEventButtonProps {
     eventId: string;
@@ -9,28 +10,33 @@ interface DeleteEventButtonProps {
 export default function DeleteEventButton({ eventId }: DeleteEventButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDelete = async () => {
-        if (!confirm("Are you sure? This cannot be undone.")) {
-            return;
-        }
+    const handleDelete = () => {
+        toast("Are you sure?", {
+            description: "This action cannot be undone.",
+            action: {
+                label: "Delete",
+                onClick: async () => {
+                    setIsDeleting(true);
 
-        setIsDeleting(true);
+                    try {
+                        const response = await fetch(`/api/organizer/events/${eventId}`, {
+                            method: "DELETE",
+                        });
 
-        try {
-            const response = await fetch(`/api/organizer/events/${eventId}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                window.location.reload();
-            } else {
-                alert("Failed to delete event");
-            }
-        } catch (error) {
-            alert("An error occurred while deleting the event");
-        } finally {
-            setIsDeleting(false);
-        }
+                        if (response.ok) {
+                            toast.success("Event deleted successfully");
+                            window.location.reload();
+                        } else {
+                            toast.error("Failed to delete event");
+                        }
+                    } catch (error) {
+                        toast.error("An error occurred while deleting the event");
+                    } finally {
+                        setIsDeleting(false);
+                    }
+                },
+            },
+        });
     };
 
     return (

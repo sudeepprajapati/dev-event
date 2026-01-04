@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Trash2, Users, Calendar, Search, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface User {
     _id: string;
@@ -49,23 +50,28 @@ export default function AdminUsersPage() {
     };
 
     const handleDelete = async (userId: string, userEmail: string) => {
-        if (!confirm(`Are you sure you want to delete user "${userEmail}"? This will also delete all their events and bookings.`)) {
-            return;
-        }
-
-        setDeletingId(userId);
-        try {
-            const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
-            if (!res.ok) {
-                alert('Failed to delete user');
-                return;
-            }
-            await fetchUsers();
-        } catch {
-            alert('Error deleting user');
-        } finally {
-            setDeletingId(null);
-        }
+        toast(`Delete "${userEmail}"?`, {
+            description: "This will also delete all their events and bookings.",
+            action: {
+                label: "Delete",
+                onClick: async () => {
+                    setDeletingId(userId);
+                    try {
+                        const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+                        if (!res.ok) {
+                            toast.error('Failed to delete user');
+                            return;
+                        }
+                        toast.success('User deleted successfully');
+                        await fetchUsers();
+                    } catch {
+                        toast.error('Error deleting user');
+                    } finally {
+                        setDeletingId(null);
+                    }
+                },
+            },
+        });
     };
 
     const filteredUsers = users.filter(user =>

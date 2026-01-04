@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Trash2, Calendar, DollarSign, Users, Image as ImageIcon, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Event {
     _id: string;
@@ -58,23 +59,28 @@ export default function AdminEventsPage() {
     };
 
     const handleDelete = async (eventId: string, eventTitle: string) => {
-        if (!confirm(`Are you sure you want to delete event "${eventTitle}"? This will also delete all its bookings.`)) {
-            return;
-        }
-
-        setDeletingId(eventId);
-        try {
-            const res = await fetch(`/api/admin/events/${eventId}`, { method: 'DELETE' });
-            if (!res.ok) {
-                alert('Failed to delete event');
-                return;
-            }
-            await fetchEvents();
-        } catch {
-            alert('Error deleting event');
-        } finally {
-            setDeletingId(null);
-        }
+        toast(`Delete "${eventTitle}"?`, {
+            description: "This will also delete all its bookings.",
+            action: {
+                label: "Delete",
+                onClick: async () => {
+                    setDeletingId(eventId);
+                    try {
+                        const res = await fetch(`/api/admin/events/${eventId}`, { method: 'DELETE' });
+                        if (!res.ok) {
+                            toast.error('Failed to delete event');
+                            return;
+                        }
+                        toast.success('Event deleted successfully');
+                        await fetchEvents();
+                    } catch {
+                        toast.error('Error deleting event');
+                    } finally {
+                        setDeletingId(null);
+                    }
+                },
+            },
+        });
     };
 
     const filteredEvents = events.filter(event =>

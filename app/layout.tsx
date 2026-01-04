@@ -5,6 +5,7 @@ import LightRays from "@/components/LightRays";
 import Navbar from "@/components/Navbar";
 import { MobileNav } from "@/components/MobileNav";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { Toaster } from "sonner";
 
 const schibstedGrotesk = Schibsted_Grotesk({
   variable: "--font-schibsted_grotesk",
@@ -50,6 +51,7 @@ export default function RootLayout({
           <main>
             {children}
           </main>
+          <Toaster position="top-center" richColors closeButton />
         </AuthProvider>
       </body>
     </html>

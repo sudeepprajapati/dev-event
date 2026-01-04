@@ -4,6 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 type EventType = {
     _id: string;
@@ -77,14 +78,15 @@ export default function CheckoutPage({
             const data = await res.json();
 
             if (!res.ok) {
-                alert(data.message || 'Failed to book event');
+                toast.error(data.message || 'Failed to book event');
                 setBooking(false);
                 return;
             }
 
+            toast.success('Booking confirmed!');
             router.push(`/booking-success/${data.bookingId}`);
         } catch {
-            alert('An error occurred. Please try again.');
+            toast.error('An error occurred. Please try again.');
             setBooking(false);
         }
     };
@@ -246,13 +248,13 @@ function CheckoutButton({ eventId, email }: { eventId: string; email: string }) 
                         if (verifyData.success) {
                             window.location.href = `/booking-success/${data.data.bookingId}`;
                         } else {
-                            alert(`Payment verification failed: ${verifyData.message}`);
+                            toast.error(`Payment verification failed: ${verifyData.message}`);
                             btn.disabled = false;
                             btn.textContent = 'Proceed to Payment';
                         }
                     } catch (error) {
                         console.error('Verification error:', error);
-                        alert('Payment completed but verification failed. Please contact support.');
+                        toast.error('Payment completed but verification failed. Please contact support.');
                         window.location.href = `/booking-success/${data.data.bookingId}`;
                     }
                 },
@@ -262,7 +264,7 @@ function CheckoutButton({ eventId, email }: { eventId: string; email: string }) 
         } catch {
             btn.disabled = false;
             btn.textContent = 'Proceed to Payment';
-            alert('Payment failed');
+            toast.error('Payment failed');
         }
     };
 
