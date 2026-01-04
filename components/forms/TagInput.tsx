@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 export default function TagInput({ label, values, onChange }: any) {
     const [input, setInput] = useState("");
@@ -31,7 +32,8 @@ export default function TagInput({ label, values, onChange }: any) {
                         className="pill cursor-pointer hover:opacity-80"
                         onClick={() => onChange(values.filter((_: any, idx: number) => idx !== i))}
                     >
-                        {v} ✕
+                        {v}
+                        <X className="h-3 w-3 ml-1" />
                     </span>
                 ))}
             </div>
