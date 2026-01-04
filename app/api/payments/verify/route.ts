@@ -14,11 +14,11 @@ export async function POST(req: NextRequest) {
         await connectDB();
         const { bookingId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
 
-        console.log('Verify request received:', { bookingId, razorpay_order_id, razorpay_payment_id });
+        console.log('Verify request received:', { bookingId, razorpay_order_id, razorpay_payment_id, razorpay_signature });
 
-        if (!bookingId || !razorpay_payment_id || !razorpay_signature) {
-            console.error('Missing payment details');
-            return NextResponse.json({ success: false, message: 'Missing payment details' }, { status: 400 });
+        if (!bookingId || !razorpay_payment_id) {
+            console.error('Missing required payment details');
+            return NextResponse.json({ success: false, message: 'Missing required payment details' }, { status: 400 });
         }
 
         const booking = await Booking.findById(bookingId);
@@ -45,30 +45,39 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Payment already failed' }, { status: 400 });
         }
 
-        const body = `${orderId}|${razorpay_payment_id}`;
-        const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
-            .update(body)
-            .digest('hex');
+        if (razorpay_signature) {
+            const body = `${orderId}|${razorpay_payment_id}`;
+            const expectedSignature = crypto
+                .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+                .update(body)
+                .digest('hex');
 
-        console.log('Signature verification:', {
-            expected: expectedSignature,
-            received: razorpay_signature,
-            match: expectedSignature === razorpay_signature
-        });
+            console.log('Signature verification:', {
+                expected: expectedSignature,
+                received: razorpay_signature,
+                match: expectedSignature === razorpay_signature
+            });
 
-        if (expectedSignature !== razorpay_signature) {
-            console.error('Invalid signature');
-            booking.paymentStatus = 'failed';
-            await booking.save();
-            return NextResponse.json({ success: false, message: 'Invalid payment signature' }, { status: 400 });
+            if (expectedSignature !== razorpay_signature) {
+                console.error('Invalid signature');
+                booking.paymentStatus = 'failed';
+                await booking.save();
+                return NextResponse.json({ success: false, message: 'Invalid payment signature' }, { status: 400 });
+            }
         }
 
         try {
             console.log('Fetching payment from Razorpay...');
-            const payment = await razorpay.payments.fetch(razorpay_payment_id);
+            let payment = await razorpay.payments.fetch(razorpay_payment_id);
 
             console.log('Payment status from Razorpay:', payment.status);
+
+            // Capture payment if it's authorized but not captured
+            if (payment.status === 'authorized') {
+                console.log('Payment is authorized, capturing...');
+                payment = await razorpay.payments.capture(razorpay_payment_id, payment.amount, payment.currency);
+                console.log('Payment captured:', payment.status);
+            }
 
             if (payment.status !== 'captured') {
                 console.error(`Payment not captured, status: ${payment.status}`);
@@ -98,6 +107,11 @@ export async function POST(req: NextRequest) {
         await booking.save();
 
         console.log(`✅ Booking ${bookingId} marked as paid`);
+        
+        if (!razorpay_signature) {
+            console.warn('⚠️ Payment verified without signature (using API fallback)');
+        }
+        
         return NextResponse.json({ success: true, message: 'Payment verified and booking confirmed' });
     } catch (error) {
         console.error('Verification error:', error);
