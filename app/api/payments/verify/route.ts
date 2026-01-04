@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
         console.log('Verify request received:', { bookingId, razorpay_order_id, razorpay_payment_id });
 
-        if (!bookingId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        if (!bookingId || !razorpay_payment_id || !razorpay_signature) {
             console.error('Missing payment details');
             return NextResponse.json({ success: false, message: 'Missing payment details' }, { status: 400 });
         }
@@ -29,6 +29,12 @@ export async function POST(req: NextRequest) {
 
         console.log(`Booking found. Current status: ${booking.paymentStatus}`);
 
+        const orderId = razorpay_order_id || booking.razorpayOrderId;
+        if (!orderId) {
+            console.error('Missing order ID');
+            return NextResponse.json({ success: false, message: 'Missing order ID' }, { status: 400 });
+        }
+
         if (booking.paymentStatus === 'paid') {
             console.log(`Booking ${bookingId} already paid`);
             return NextResponse.json({ success: true, message: 'Already paid' });
@@ -39,7 +45,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Payment already failed' }, { status: 400 });
         }
 
-        const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+        const body = `${orderId}|${razorpay_payment_id}`;
         const expectedSignature = crypto
             .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
             .update(body)
@@ -87,7 +93,7 @@ export async function POST(req: NextRequest) {
         }
 
         booking.paymentStatus = 'paid';
-        booking.razorpayOrderId = razorpay_order_id;
+        booking.razorpayOrderId = orderId;
         booking.razorpayPaymentId = razorpay_payment_id;
         await booking.save();
 
