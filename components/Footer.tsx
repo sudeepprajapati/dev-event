@@ -29,7 +29,7 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/#events" className="hover:text-white transition">
+                                <Link href="/events" className="hover:text-white transition">
                                     Browse Events
                                 </Link>
                             </li>

@@ -25,7 +25,7 @@ export default function Navbar() {
 
                 <ul className="hidden md:flex">
                     <Link href="/">Home</Link>
-                    <Link href="/#events">Events</Link>
+                    <Link href="/events">Events</Link>
                     <Link href="/create-event">Create Event</Link>
                 </ul>
 

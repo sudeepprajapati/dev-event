@@ -28,7 +28,7 @@ export function MobileNav({ open, onClose }: Props) {
                     <Calendar className="h-4 w-4" />
                     Home
                 </Link>
-                <Link href="/#events" className="px-5 py-3 flex items-center gap-3" onClick={onClose}>
+                <Link href="/events" className="px-5 py-3 flex items-center gap-3" onClick={onClose}>
                     <Calendar className="h-4 w-4" />
                     Events
                 </Link>
