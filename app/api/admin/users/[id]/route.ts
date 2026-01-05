@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { Event, Booking } from '@/database';
+import { Event, Booking, User } from '@/database';
 import connectDB from '@/lib/mongodb';
 import { authOptions } from '@/lib/auth/authOptions';
 

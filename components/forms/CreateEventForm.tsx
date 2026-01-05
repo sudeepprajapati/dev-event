@@ -162,7 +162,8 @@ export default function CreateEventForm({
                 formData.append(key, value);
             });
 
-            formData.append("price", String(Number(values.price)));
+            const priceNum = Number(values.price);
+            formData.append("price", String(isNaN(priceNum) ? 0 : priceNum));
 
             if (image) {
                 formData.append("image", image);

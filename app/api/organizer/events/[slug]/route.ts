@@ -54,7 +54,7 @@ export async function PUT(
         }
 
         const { slug } = await params;
-        const updates = await req.json();
+        const formData = await req.formData();
 
         await connectDB();
 
@@ -73,11 +73,45 @@ export async function PUT(
             return NextResponse.json({ success: false, message: 'Not authorized to edit this event' }, { status: 403 });
         }
 
+        // Convert FormData to object
+        let updates;
+        try {
+            updates = Object.fromEntries(formData);
+        } catch (e) {
+            return NextResponse.json({ success: false, message: 'Invalid data format' }, { status: 400 });
+        }
+
+        // Handle image update if provided
+        const file = formData.get('image') as File;
+        if (file && file.size > 0) {
+            // Upload new image using Cloudinary
+            const { v2 as cloudinary } = await import('cloudinary');
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            const uploadResult = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream({ resource_type: 'image', folder: 'DevEvent' }, (error, results) => {
+                    if (error) return reject(error);
+                    resolve(results);
+                }).end(buffer);
+            });
+
+            updates.image = (uploadResult as { secure_url: string }).secure_url;
+        }
+
         // Prevent organizerId and slug changes
         delete updates.organizerId;
         delete updates.slug;
 
-        const updated = await Event.findByIdAndUpdate(slug, updates, { new: true });
+        // Parse JSON fields
+        const tags = JSON.parse(formData.get('tags') as string);
+        const agenda = JSON.parse(formData.get('agenda') as string);
+
+        const updated = await Event.findByIdAndUpdate(slug, {
+            ...updates,
+            tags,
+            agenda
+        }, { new: true });
 
         return NextResponse.json({ success: true, message: 'Event updated', data: updated });
     } catch (error) {
