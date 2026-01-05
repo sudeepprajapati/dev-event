@@ -176,7 +176,7 @@
   }
 
   #event-card {
-    @apply flex flex-col gap-3;
+    @apply flex flex-col gap-3 p-4;
 
     .poster {
       @apply h-75 w-full rounded-lg object-cover;
