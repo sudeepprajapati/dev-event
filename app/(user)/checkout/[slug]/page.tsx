@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import { Calendar, Clock, MapPin, AlertTriangle, ChevronRight } from 'lucide-react';
 
 type EventType = {
     _id: string;
@@ -100,36 +101,49 @@ export default function CheckoutPage({
     const isFree = event.price === 0;
 
     return (
-        <main className="max-w-2xl mx-auto py-12 px-4">
-            <h1 className="text-3xl font-bold mb-8">
+        <main className="max-w-4xl mx-auto py-12 px-4">
+            <h1 className="text-5xl font-bold mb-2">
                 {isFree ? 'Register for Free Event' : 'Confirm Booking'}
             </h1>
+            <p className="text-gray-400 text-lg mb-8">
+                {isFree ? 'Complete your registration for this event' : 'Review your booking details before payment'}
+            </p>
 
-            <div className="glass rounded-lg p-6 mb-8">
-                <Image
-                    src={event.image}
-                    alt={event.title}
-                    width={400}
-                    height={250}
-                    className="rounded-lg mb-4 w-full"
-                />
+            <div className="glass rounded-xl p-8 mb-8">
+                <div className="flex flex-col md:flex-row gap-6 mb-8">
+                    <div className="md:w-2/5">
+                        <Image
+                            src={event.image}
+                            alt={event.title}
+                            width={300}
+                            height={250}
+                            className="rounded-lg w-full object-cover"
+                        />
+                    </div>
 
-                <h2 className="text-2xl font-semibold mb-2">{event.title}</h2>
+                    <div className="md:w-3/5 space-y-5">
+                        <div>
+                            <h2 className="text-2xl font-bold mb-4">{event.title}</h2>
+                        </div>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                    <Info label="Date" value={event.date} />
-                    <Info label="Time" value={event.time} />
-                    <Info label="Location" value={event.location} />
-                    <Info label="Mode" value={event.mode} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <Info label="Date" value={event.date} icon={Calendar} />
+                            <Info label="Time" value={event.time} icon={Clock} />
+                            <Info label="Location" value={event.location} icon={MapPin} />
+                            <Info label="Mode" value={event.mode} />
+                        </div>
+
+                        <div className="border-t border-border-dark pt-4">
+                            <p className="text-sm text-gray-400 mb-1">Your Email</p>
+                            <p className="font-medium">{session.user.email}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="border-t mt-4 pt-4">
-                    <p className="text-sm text-gray-400">Email</p>
-                    <p className="font-medium">{session.user.email}</p>
+                <div className="border-t border-border-dark pt-6">
+                    <PriceBox price={event.price} />
                 </div>
             </div>
-
-            <PriceBox price={event.price} />
 
             <Warning isFree={isFree} />
 
@@ -137,9 +151,14 @@ export default function CheckoutPage({
                 <button
                     onClick={handleFreeBooking}
                     disabled={booking}
-                    className="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 rounded-lg disabled:opacity-50"
+                    className="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
                 >
-                    {booking ? 'Registering...' : 'Register Now - Free'}
+                    {booking ? 'Registering...' : (
+                        <>
+                            Register Now - Free
+                            <ChevronRight className="h-5 w-5" />
+                        </>
+                    )}
                 </button>
             ) : (
                 <CheckoutButton
@@ -151,10 +170,13 @@ export default function CheckoutPage({
     );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Info({ label, value, icon: Icon }: { label: string; value: string; icon?: any }) {
     return (
-        <div>
-            <p className="text-xs text-gray-400">{label}</p>
+        <div className="flex flex-col">
+            <p className="text-sm text-gray-400 mb-1 flex items-center gap-2">
+                {Icon && <Icon className="h-4 w-4" />}
+                {label}
+            </p>
             <p className="font-medium">{value}</p>
         </div>
     );
@@ -163,28 +185,28 @@ function Info({ label, value }: { label: string; value: string }) {
 function PriceBox({ price }: { price: number }) {
     if (price === 0) {
         return (
-            <div className="bg-dark-100 rounded-lg p-6 mb-8">
-                <div className="flex justify-between">
-                    <span>Price per ticket</span>
-                    <span className="text-2xl font-bold text-green-600">FREE</span>
+            <div className="bg-dark-100 rounded-lg p-6">
+                <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-400">Price per ticket</span>
+                    <span className="text-3xl font-bold text-green-500">FREE</span>
                 </div>
-                <div className="flex justify-between border-t pt-4 mt-4">
+                <div className="flex justify-between items-center border-t pt-4 mt-4">
                     <span className="font-semibold">Total Amount</span>
-                    <span className="text-3xl font-bold text-green-600">₹0</span>
+                    <span className="text-4xl font-bold text-green-500">₹0</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-dark-100 rounded-lg p-6 mb-8">
-            <div className="flex justify-between mb-4">
-                <span>Price per ticket</span>
-                <span className="text-2xl font-bold text-primary">₹{price}</span>
-            </div>
-            <div className="flex justify-between border-t pt-4">
-                <span className="font-semibold">Total Amount</span>
+        <div className="bg-dark-100 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+                <span className="text-gray-400">Price per ticket</span>
                 <span className="text-3xl font-bold text-primary">₹{price}</span>
+            </div>
+            <div className="flex justify-between items-center border-t pt-4 mt-4">
+                <span className="font-semibold">Total Amount</span>
+                <span className="text-4xl font-bold text-primary">₹{price}</span>
             </div>
         </div>
     );
@@ -193,21 +215,33 @@ function PriceBox({ price }: { price: number }) {
 function Warning({ isFree }: { isFree: boolean }) {
     if (isFree) {
         return (
-            <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-4 mb-8">
-                <p className="text-sm text-green-200">
-                    This is a free event. Click &quot;Register Now&quot; to confirm your attendance.
-                    You will receive a confirmation email with event details.
-                </p>
+            <div className="glass rounded-xl p-6 mb-8 border-l-4 border-l-green-500">
+                <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-6 w-6 text-green-500 shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-semibold mb-1">Free Event Registration</p>
+                        <p className="text-sm text-gray-300">
+                            This is a free event. Click &quot;Register Now&quot; to confirm your attendance.
+                            You will receive a confirmation email with event details.
+                        </p>
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-4 mb-8">
-            <p className="text-sm text-yellow-200">
-                You will be redirected to Razorpay for secure payment.
-                Do not refresh or close this page.
-            </p>
+        <div className="glass rounded-xl p-6 mb-8 border-l-4 border-l-yellow-500">
+            <div className="flex items-start gap-3">
+                <AlertTriangle className="h-6 w-6 text-yellow-500 shrink-0 mt-0.5" />
+                <div>
+                    <p className="font-semibold mb-1">Payment Information</p>
+                    <p className="text-sm text-gray-300">
+                        You will be redirected to Razorpay for secure payment.
+                        Do not refresh or close this page during the payment process.
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }
@@ -272,9 +306,10 @@ function CheckoutButton({ eventId, email }: { eventId: string; email: string }) 
         <>
             <button
                 onClick={(e) => handlePayment(e.currentTarget)}
-                className="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 rounded-lg"
+                className="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-all"
             >
                 Proceed to Payment
+                <ChevronRight className="h-5 w-5" />
             </button>
 
             <script src="https://checkout.razorpay.com/v1/checkout.js" async />

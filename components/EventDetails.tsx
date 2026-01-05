@@ -31,7 +31,7 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 )
 
 
-const EventDetails = ({ event, similarEvents }: { event: any; similarEvents: IEvent[] }) => {
+const EventDetails = ({ event, similarEvents, userBooking }: { event: any; similarEvents: IEvent[]; userBooking: any }) => {
     const { description, image, overview, date, time, location, mode, agenda, audience, tags, organizer, price, _id, slug: eventSlug } = event;
 
     if (!description) return null;
@@ -68,7 +68,7 @@ const EventDetails = ({ event, similarEvents }: { event: any; similarEvents: IEv
                     <EventAgenda agendaItems={agenda} />
 
                     <section className="flex-col-gap-2">
-                        <h2>About the Organizer</h2>
+                        <h2>About Organizer</h2>
                         <p>{organizer}</p>
                     </section>
 
@@ -87,7 +87,44 @@ const EventDetails = ({ event, similarEvents }: { event: any; similarEvents: IEv
                             <p className="text-sm">Be the first to book your spot!</p>
                         )}
 
-                        {price > 0 ? (
+                        {userBooking ? (
+                            <div className="glass rounded-xl p-6 border-l-4 border-l-green-500">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
+                                    <span className="text-green-300 font-semibold text-lg">
+                                        {userBooking.paymentStatus === 'paid' ? 'Booking Confirmed'
+                                        : userBooking.paymentStatus === 'failed' ? 'Payment Failed'
+                                        : 'Processing Payment'}
+                                    </span>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3 text-sm">
+                                        <span className="text-gray-400">Status:</span>
+                                        <span className={`px-3 py-1 rounded-full font-semibold ${
+                                            userBooking.paymentStatus === 'paid' ? 'bg-green-900/30 text-green-400'
+                                            : userBooking.paymentStatus === 'failed' ? 'bg-red-900/30 text-red-400'
+                                            : 'bg-yellow-900/30 text-yellow-400'
+                                        }`}>
+                                            {userBooking.paymentStatus}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm">
+                                        <span className="text-gray-400">Amount:</span>
+                                        <span className="font-semibold text-lg text-primary">₹{userBooking.amount || 0}</span>
+                                    </div>
+                                </div>
+                                {userBooking.paymentStatus === 'failed' && (
+                                    <div className="mt-4 pt-4 border-t border-border-dark">
+                                        <a
+                                            href={`/checkout/${event._id}`}
+                                            className="block w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 rounded-lg text-center transition-all"
+                                        >
+                                            Try Again
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        ) : price > 0 ? (
                             <BookEventPaid eventId={_id} slug={eventSlug} price={price} />
                         ) : (
                             <BookEvent eventId={_id} slug={eventSlug} />

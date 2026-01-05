@@ -57,3 +57,27 @@ export const getBookingsByEmail = async (email: string) => {
         return [];
     }
 }
+
+export const getUserBookingForEvent = async (eventId: string, email?: string) => {
+    if (!email) return null;
+
+    try {
+        await connectDB();
+        const booking = await Booking.findOne({ eventId, email })
+            .populate('eventId')
+            .lean();
+
+        if (!booking) return null;
+
+        return {
+            ...booking,
+            _id: booking._id.toString(),
+            eventId: booking.eventId && typeof booking.eventId === 'object' ? {
+                ...booking.eventId,
+                _id: booking.eventId._id?.toString?.() ?? booking.eventId._id,
+            } : booking.eventId,
+        };
+    } catch {
+        return null;
+    }
+}
