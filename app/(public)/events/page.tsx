@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import EventCard from '@/components/EventCard';
-import { Search, SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, DollarSign } from 'lucide-react';
 
 interface IEvent {
     _id: string;
@@ -17,7 +17,7 @@ interface IEvent {
     tags: string[];
 }
 
-type SortOption = 'date-asc' | 'date-desc' | 'price-asc' | 'price-desc' | 'title-asc' | 'title-desc';
+type SortOption = 'date-asc' | 'date-desc' | 'price-asc' | 'price-desc';
 type FilterMode = 'all' | 'online' | 'offline' | 'hybrid';
 
 export default function EventsPage() {
@@ -26,7 +26,8 @@ export default function EventsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [selectedMode, setSelectedMode] = useState<FilterMode>('all');
-    const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
     const [sortBy, setSortBy] = useState<SortOption>('date-asc');
     const [showFilters, setShowFilters] = useState(false);
 
@@ -74,7 +75,11 @@ export default function EventsPage() {
             filtered = filtered.filter(event => event.mode === selectedMode);
         }
 
-        filtered = filtered.filter(event => event.price >= priceRange[0] && event.price <= priceRange[1]);
+        if (minPrice || maxPrice) {
+            const min = minPrice ? Number(minPrice) : 0;
+            const max = maxPrice ? Number(maxPrice) : Infinity;
+            filtered = filtered.filter(event => event.price >= min && event.price <= max);
+        }
 
         filtered.sort((a, b) => {
             switch (sortBy) {
@@ -86,26 +91,23 @@ export default function EventsPage() {
                     return a.price - b.price;
                 case 'price-desc':
                     return b.price - a.price;
-                case 'title-asc':
-                    return a.title.localeCompare(b.title);
-                case 'title-desc':
-                    return b.title.localeCompare(a.title);
                 default:
                     return 0;
             }
         });
 
         return filtered;
-    }, [events, debouncedSearch, selectedMode, priceRange, sortBy]);
+    }, [events, debouncedSearch, selectedMode, minPrice, maxPrice, sortBy]);
 
     const clearFilters = () => {
         setSearchQuery('');
         setSelectedMode('all');
-        setPriceRange([0, 10000]);
+        setMinPrice('');
+        setMaxPrice('');
         setSortBy('date-asc');
     };
 
-    const hasActiveFilters = debouncedSearch || selectedMode !== 'all' || priceRange[0] !== 0 || priceRange[1] !== 10000 || sortBy !== 'date-asc';
+    const hasActiveFilters = debouncedSearch || selectedMode !== 'all' || minPrice || maxPrice || sortBy !== 'date-asc';
 
     return (
         <section>
@@ -166,34 +168,33 @@ export default function EventsPage() {
                                     <option value="date-desc">Date: Latest First</option>
                                     <option value="price-asc">Price: Low to High</option>
                                     <option value="price-desc">Price: High to Low</option>
-                                    <option value="title-asc">Title: A to Z</option>
-                                    <option value="title-desc">Title: Z to A</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-2">
-                                    Price Range: ₹{priceRange[0]} - ₹{priceRange[1]}
-                                </label>
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="10000"
-                                        step="100"
-                                        value={priceRange[0]}
-                                        onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                                        className="flex-1"
-                                    />
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="10000"
-                                        step="100"
-                                        value={priceRange[1]}
-                                        onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                                        className="flex-1"
-                                    />
+                                <label className="block text-sm font-medium text-gray-400 mb-2">Price Range</label>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 relative">
+                                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                        <input
+                                            type="number"
+                                            placeholder="Min"
+                                            value={minPrice}
+                                            onChange={(e) => setMinPrice(e.target.value)}
+                                            className="w-full pl-8 pr-3 py-3 bg-dark-200 border border-border-dark rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:border-primary transition-all"
+                                        />
+                                    </div>
+                                    <span className="text-gray-400">-</span>
+                                    <div className="flex-1 relative">
+                                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                        <input
+                                            type="number"
+                                            placeholder="Max"
+                                            value={maxPrice}
+                                            onChange={(e) => setMaxPrice(e.target.value)}
+                                            className="w-full pl-8 pr-3 py-3 bg-dark-200 border border-border-dark rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:border-primary transition-all"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

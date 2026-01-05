@@ -40,7 +40,7 @@ export default function AdminBookingsClient({ eventFilter }: AdminBookingsClient
     }
 
     return (
-        <main className="max-w-6xl mx-auto py-8 px-4">
+        <main>
             <div className="flex items-center gap-4 mb-8">
                 <Link
                     href="/admin"
@@ -54,8 +54,8 @@ export default function AdminBookingsClient({ eventFilter }: AdminBookingsClient
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <Stat label="Total Bookings" value={stats.totalBookings} />
-                <Stat label="Paid" value={stats.paidBookings} className="text-green-600" />
-                <Stat label="Pending" value={stats.pendingBookings} className="text-yellow-600" />
+                <Stat label="Paid" value={stats.paidBookings} className="text-green-500" />
+                <Stat label="Pending" value={stats.pendingBookings} className="text-yellow-500" />
                 <Stat label="Revenue" value={`₹${stats.totalRevenue}`} />
             </div>
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { SignoutButton } from "@/components/SignoutButton";
-import { Calendar, User, LogOut, Shield, X } from "lucide-react";
+import { Calendar, User, LogOut, Shield, X, Home, CreativeCommons, CalendarDays, CalendarPlus, LayoutDashboard, Ticket, ShieldCheck } from "lucide-react";
 
 type Props = {
     open: boolean;
@@ -25,15 +25,15 @@ export function MobileNav({ open, onClose }: Props) {
                 </div>
 
                 <Link href="/" className="px-5 py-3 flex items-center gap-3" onClick={onClose}>
-                    <Calendar className="h-4 w-4" />
+                    <Home className="h-4 w-4" />
                     Home
                 </Link>
                 <Link href="/events" className="px-5 py-3 flex items-center gap-3" onClick={onClose}>
-                    <Calendar className="h-4 w-4" />
+                    <CalendarDays className="h-4 w-4" />
                     Events
                 </Link>
                 <Link href="/create-event" className="px-5 py-3 flex items-center gap-3" onClick={onClose}>
-                    <Calendar className="h-4 w-4" />
+                    <CalendarPlus className="h-4 w-4" />
                     Create Event
                 </Link>
 
@@ -49,16 +49,16 @@ export function MobileNav({ open, onClose }: Props) {
                             {session.user?.email}
                         </div>
                         <Link href="/my-bookings" className="px-5 py-3 text-sm flex items-center gap-3" onClick={onClose}>
-                            <Calendar className="h-4 w-4" />
+                            <Ticket className="h-4 w-4" />
                             My Bookings
                         </Link>
                         <Link href="/organizer/events" className="px-5 py-3 text-sm flex items-center gap-3" onClick={onClose}>
-                            <Calendar className="h-4 w-4" />
+                            <LayoutDashboard className="h-4 w-4" />
                             Organizer Dashboard
                         </Link>
                         {session.user?.isAdmin && (
                             <Link href="/admin" className="px-5 py-3 text-sm text-purple-400 flex items-center gap-3" onClick={onClose}>
-                                <Shield className="h-4 w-4" />
+                                <ShieldCheck className="h-4 w-4" />
                                 Admin Panel
                             </Link>
                         )}

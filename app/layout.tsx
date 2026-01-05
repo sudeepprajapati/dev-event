@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { MobileNav } from "@/components/MobileNav";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
+import Footer from "@/components/Footer";
 
 const schibstedGrotesk = Schibsted_Grotesk({
   variable: "--font-schibsted_grotesk",
@@ -33,25 +34,28 @@ export default function RootLayout({
         className={`${schibstedGrotesk.variable} ${martianMono.variable} min-h-screen antialiased`}
       >
         <AuthProvider>
-          <Navbar />
-          <div className="absolute inset-0 top-0 z-[-1] min-h-screen overflow-hidden">
-            <LightRays
-              raysOrigin="top-center-offset"
-              raysColor="#5dfeca"
-              raysSpeed={0.5}
-              lightSpread={0.9}
-              rayLength={1.4}
-              followMouse={true}
-              mouseInfluence={0.02}
-              noiseAmount={0.0}
-              distortion={0.01}
-              className="custom-rays"
-            />
+          <div className="flex flex-col min-h-screen">
+            <div className="fixed inset-0 top-0 z-[-1] min-h-screen overflow-hidden">
+              <LightRays
+                raysOrigin="top-center-offset"
+                raysColor="#5dfeca"
+                raysSpeed={0.5}
+                lightSpread={0.9}
+                rayLength={1.4}
+                followMouse={true}
+                mouseInfluence={0.02}
+                noiseAmount={0.0}
+                distortion={0.01}
+                className="custom-rays"
+              />
+            </div>
+            <Navbar />
+            <main className="flex-1 mt-10">
+              {children}
+            </main>
+            <Footer />
+            <Toaster position="top-center" richColors closeButton />
           </div>
-          <main>
-            {children}
-          </main>
-          <Toaster position="top-center" richColors closeButton />
         </AuthProvider>
       </body>
     </html>

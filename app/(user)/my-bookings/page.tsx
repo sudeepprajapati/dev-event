@@ -18,11 +18,11 @@ export default async function MyBookingsPage() {
 
     return (
         <main className="max-w-2xl mx-auto py-8 px-4">
-            <h1 className="text-2xl font-bold mb-6">My Bookings</h1>
+            <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
             <div className="space-y-4">
-                {safeBookings.length === 0 && <div>No bookings found.</div>}
+                {safeBookings.length === 0 && <div className="glass rounded-lg p-8 text-center text-gray-400">No bookings found.</div>}
                 {safeBookings.map((booking: any) => (
-                    <div key={booking._id} className="rounded p-4 bg-black/50">
+                    <div key={booking._id} className="glass hover:bg-dark-200/60 rounded-lg p-4 transition-all">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                             <div>
                                 <div className="font-semibold text-lg">{booking.eventId?.title}</div>
@@ -31,9 +31,9 @@ export default async function MyBookingsPage() {
                             </div>
                             <div className="text-right">
                                 <div className="font-medium">Status: <span className={
-                                    booking.paymentStatus === 'paid' ? 'text-green-600' : booking.paymentStatus === 'pending' ? 'text-yellow-600' : 'text-red-600'
+                                    booking.paymentStatus === 'paid' ? 'text-green-500' : booking.paymentStatus === 'pending' ? 'text-yellow-500' : 'text-red-500'
                                 }>{booking.paymentStatus}</span></div>
-                                <div className="text-sm">Amount: ₹{booking.amount}</div>
+                                <div className="text-sm">Amount: <span className="text-primary font-semibold">₹{booking.amount}</span></div>
                             </div>
                         </div>
                     </div>

@@ -33,7 +33,7 @@ export default function Navbar() {
                     {session ? (
                         <div className="relative">
                             <div
-                                className="h-8 w-8 rounded-full bg-primary text-black flex items-center justify-center text-sm font-semibold cursor-pointer select-none"
+                                className="glass h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold cursor-pointer select-none hover:bg-primary/30 transition-all border-primary/30"
                                 onClick={() => setProfileOpen(v => !v)}
                             >
                                 {initial}
