@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { Event, User, Booking } from '@/database';
 import connectDB from '@/lib/mongodb';
 import { authOptions } from '@/lib/auth/authOptions';
+import { v2 as cloudinary } from 'cloudinary';
 
 export async function DELETE(
     req: NextRequest,
@@ -27,12 +28,10 @@ export async function DELETE(
             return NextResponse.json({ success: false, message: 'Event not found' }, { status: 404 });
         }
 
-        // Check ownership
         if (event.organizerId.toString() !== organizer._id.toString()) {
             return NextResponse.json({ success: false, message: 'Not authorized to delete this event' }, { status: 403 });
         }
 
-        // Delete event and associated bookings
         await Booking.deleteMany({ eventId: slug });
         await Event.findByIdAndDelete(slug);
 
@@ -68,12 +67,10 @@ export async function PUT(
             return NextResponse.json({ success: false, message: 'Event not found' }, { status: 404 });
         }
 
-        // Check ownership
         if (event.organizerId.toString() !== organizer._id.toString()) {
             return NextResponse.json({ success: false, message: 'Not authorized to edit this event' }, { status: 403 });
         }
 
-        // Convert FormData to object
         let updates;
         try {
             updates = Object.fromEntries(formData);
@@ -81,16 +78,13 @@ export async function PUT(
             return NextResponse.json({ success: false, message: 'Invalid data format' }, { status: 400 });
         }
 
-        // Handle image update if provided
         const file = formData.get('image') as File;
         if (file && file.size > 0) {
-            // Upload new image using Cloudinary
-            const { v2 as cloudinary } = await import('cloudinary');
             const arrayBuffer = await file.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
 
             const uploadResult = await new Promise((resolve, reject) => {
-                cloudinary.uploader.upload_stream({ resource_type: 'image', folder: 'DevEvent' }, (error, results) => {
+                cloudinary.uploader.upload_stream({ resource_type: 'image', folder: 'DevEvent' }, (error: any, results: any) => {
                     if (error) return reject(error);
                     resolve(results);
                 }).end(buffer);
@@ -99,11 +93,9 @@ export async function PUT(
             updates.image = (uploadResult as { secure_url: string }).secure_url;
         }
 
-        // Prevent organizerId and slug changes
         delete updates.organizerId;
         delete updates.slug;
 
-        // Parse JSON fields
         const tags = JSON.parse(formData.get('tags') as string);
         const agenda = JSON.parse(formData.get('agenda') as string);
 
