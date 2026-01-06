@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
-import AdminBookingsClient from "./AdminBookingsClient";
+import AdminBookingsClient from "@/components/AdminBookingsClient";
 
 export default async function AdminBookingsPage({
     searchParams,
