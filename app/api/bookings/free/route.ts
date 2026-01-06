@@ -3,9 +3,19 @@ import { getServerSession } from 'next-auth';
 import { Event, Booking } from '@/database';
 import connectDB from '@/lib/mongodb';
 import { authOptions } from '@/lib/auth/authOptions';
+import { checkRateLimit, createRateLimitResponse, RATE_LIMIT_PRESETS } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
     try {
+        const rateLimitResult = await checkRateLimit(
+            req,
+            RATE_LIMIT_PRESETS.PAYMENT
+        );
+
+        if (!rateLimitResult.success) {
+            return createRateLimitResponse(rateLimitResult);
+        }
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.email) {
             return NextResponse.json(

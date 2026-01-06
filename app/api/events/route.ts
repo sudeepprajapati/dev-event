@@ -4,10 +4,19 @@ import { v2 as cloudinary } from 'cloudinary';
 import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth/authOptions";
+import { checkRateLimit, createRateLimitResponse, RATE_LIMIT_PRESETS } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
     try {
-        // AUTH CHECK: Only authenticated users can create events
+        const rateLimitResult = await checkRateLimit(
+            req,
+            RATE_LIMIT_PRESETS.CREATE_EVENT
+        );
+
+        if (!rateLimitResult.success) {
+            return createRateLimitResponse(rateLimitResult);
+        }
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.email) {
             return NextResponse.json({ message: 'Unauthorized: Please sign in' }, { status: 401 });
@@ -15,7 +24,6 @@ export async function POST(req: NextRequest) {
 
         await connectDB();
 
-        // Get organizer user from session email
         const organizer = await User.findOne({ email: session.user.email });
         if (!organizer) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
@@ -51,7 +59,6 @@ export async function POST(req: NextRequest) {
         })
 
         event.image = (uploadResult as { secure_url: string }).secure_url;
-        // Inject organizerId from session
         event.organizerId = organizer._id;
 
         const createdEvent = await Event.create({
@@ -70,6 +77,15 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
     try {
+        const rateLimitResult = await checkRateLimit(
+            req,
+            RATE_LIMIT_PRESETS.PUBLIC_API
+        );
+
+        if (!rateLimitResult.success) {
+            return createRateLimitResponse(rateLimitResult);
+        }
+
         await connectDB();
 
         const events = await Event.find().sort({ createdAt: -1 });
