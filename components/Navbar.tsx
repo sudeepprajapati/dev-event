@@ -73,7 +73,7 @@ export default function Navbar() {
                                         <hr className="border-border-dark my-2" />
                                         <SignoutButton
                                             variant="ghost"
-                                            className="w-full justify-start px-4 py-2 cursor-pointer hover:bg-dark-200 hover:text-red-500 text-red-500"
+                                            className="w-full mr-2 glass justify-start  cursor-pointer hover:bg-red-500/10  hover:text-red-400 text-red-500"
                                         />
                                     </div>
                                 </div>
