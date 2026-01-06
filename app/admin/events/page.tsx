@@ -98,8 +98,8 @@ export default function AdminEventsPage() {
     }
 
     return (
-        <main className="max-w-7xl mx-auto py-8 px-4">
-            <div className="flex items-center gap-4 mb-8">
+        <section className="max-w-7xl w-full mx-auto ">
+            <div className="flex items-center gap-4 mb-8 ">
                 <Link
                     href="/admin"
                     className="flex items-center gap-2 text-gray-400 hover:text-foreground transition"
@@ -217,7 +217,7 @@ export default function AdminEventsPage() {
                     Showing {filteredEvents.length} of {stats.totalEvents} events
                 </div>
             )}
-        </main>
+        </section>
     );
 }
 

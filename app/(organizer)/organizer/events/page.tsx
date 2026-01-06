@@ -24,7 +24,7 @@ export default async function OrganizerEventsPage() {
     const safeEvents = await getEventsByOrganizerId(organizer._id);
 
     return (
-        <main className="max-w-6xl mx-auto py-8 px-4">
+        <section className="max-w-3xl w-full mx-auto ">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">My Events</h1>
                 <Link
@@ -93,6 +93,6 @@ export default async function OrganizerEventsPage() {
                     ))}
                 </div>
             )}
-        </main>
+        </section>
     );
 }

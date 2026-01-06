@@ -17,7 +17,7 @@ export default async function MyBookingsPage() {
     const safeBookings = await getBookingsByEmail(session.user.email);
 
     return (
-        <main className="max-w-2xl mx-auto py-8 px-4">
+        <section className="max-w-3xl w-full mx-auto">
             <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
             <div className="space-y-4">
                 {safeBookings.length === 0 && <div className="glass rounded-lg p-8 text-center text-gray-400">No bookings found.</div>}
@@ -39,6 +39,6 @@ export default async function MyBookingsPage() {
                     </div>
                 ))}
             </div>
-        </main>
+        </section>
     );
 }

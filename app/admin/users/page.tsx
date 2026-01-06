@@ -81,14 +81,14 @@ export default function AdminUsersPage() {
 
     if (loading) {
         return (
-            <main className="max-w-7xl mx-auto py-8 px-4">
+            <section className="max-w-7xl mx-auto">
                 <div className="text-center">Loading...</div>
-            </main>
+            </section>
         );
     }
 
     return (
-        <main className="max-w-7xl mx-auto py-8 px-4">
+        <section className="max-w-7xl mx-auto  w-full">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                     <Link
@@ -178,6 +178,6 @@ export default function AdminUsersPage() {
                     Showing {filteredUsers.length} of {stats.totalUsers} users
                 </div>
             )}
-        </main>
+        </section>
     );
 }

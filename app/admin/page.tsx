@@ -45,7 +45,7 @@ export default async function AdminPage() {
     ];
 
     return (
-        <main className="max-w-6xl mx-auto py-12 px-4">
+        <section className="max-w-6xl w-full mx-auto">
             <div className="mb-8">
                 <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
                     <LayoutDashboard className="h-10 w-10 text-primary" />
@@ -89,6 +89,6 @@ export default async function AdminPage() {
                     in the Event model and calculate admin earnings during payment processing.
                 </p>
             </div>
-        </main>
+        </section>
     );
 }
