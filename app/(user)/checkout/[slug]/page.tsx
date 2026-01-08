@@ -222,7 +222,6 @@ function Warning({ isFree }: { isFree: boolean }) {
                         <p className="font-semibold mb-1">Free Event Registration</p>
                         <p className="text-sm text-gray-300">
                             This is a free event. Click &quot;Register Now&quot; to confirm your attendance.
-                            You will receive a confirmation email with event details.
                         </p>
                     </div>
                 </div>

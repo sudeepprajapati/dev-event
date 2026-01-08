@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import VerifyPaymentButton from '@/components/VerifyPaymentButton';
 import { getBookingById } from '@/lib/actions/booking.action';
-import { Clock, XCircle, CheckCircle, Mail, Calendar, MapPin, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Clock, XCircle, CheckCircle, Calendar, MapPin, ChevronRight, ArrowLeft } from 'lucide-react';
 
 export const metadata = {
     title: 'Booking Success',
@@ -212,11 +212,11 @@ export default async function BookingSuccessPage({
             </div>
 
             <div className="glass rounded-xl p-6 mb-8 border-l-4 border-l-green-500">
-                <Mail className="h-6 w-6 text-green-500 mb-2" />
+                <CheckCircle className="h-6 w-6 text-green-500 mb-2" />
                 <div>
-                    <p className="font-semibold mb-1">Confirmation Email Sent</p>
+                    <p className="font-semibold mb-1">Booking Confirmed</p>
                     <p className="text-sm text-gray-400">
-                        A detailed confirmation email has been sent to <span className="font-mono">{safeBooking.email}</span>. Please check your inbox.
+                        Your booking has been confirmed. You can view it in your bookings dashboard.
                     </p>
                 </div>
             </div>

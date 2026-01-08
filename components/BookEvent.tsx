@@ -58,7 +58,7 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
             {submitted ? (
                 <div className="text-green-600 text-sm flex items-center gap-2">
                     <CheckCircle className="h-4 w-4" />
-                    Thank you for signing up! Check your email for confirmation.
+                    Registration confirmed! You can view your booking in My Bookings.
                 </div>
             ) : (
                 <form onSubmit={handleSubmit}>
