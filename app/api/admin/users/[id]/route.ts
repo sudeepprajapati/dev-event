@@ -31,10 +31,15 @@ export async function DELETE(
         }
 
         await Event.deleteMany({ organizerId: id });
-        await Booking.deleteMany({ userId: id });
+
+        await Booking.updateMany(
+            { userId: id },
+            { $unset: { userId: 1 } }
+        );
+
         await User.findByIdAndDelete(id);
 
-        return NextResponse.json({ success: true, message: 'User and all associated data deleted successfully' });
+        return NextResponse.json({ success: true, message: 'User deleted successfully. Events removed, bookings preserved for analytics.' });
     } catch (error) {
         console.error('Error deleting user:', error);
         return NextResponse.json({ success: false, message: 'Failed to delete user' }, { status: 500 });
