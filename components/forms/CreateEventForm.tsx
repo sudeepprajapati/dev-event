@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/select";
 
 import TagInput from "./TagInput";
-import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /* Schema */
@@ -76,14 +75,9 @@ function DateTimeInput(
     props: React.InputHTMLAttributes<HTMLInputElement>
 ) {
     return (
-        <input
+        <Input
             {...props}
-            className={cn(
-                "bg-dark-200 text-foreground rounded-md px-5 py-2.5",
-                "focus:outline-none focus:ring-2 focus:ring-primary",
-                "appearance-auto",
-                props.className
-            )}
+            className="border-color-border-dark bg-color-dark-100 text-white placeholder-gray-500 focus:border-color-blue focus:ring-color-blue relative z-100"
         />
     );
 }
@@ -107,12 +101,6 @@ export default function CreateEventForm({
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!session?.user?.email) {
-            router.push('/auth/signin');
-        }
-    }, [session, router]);
 
     const form = useForm<EventFormValues>({
         resolver: zodResolver(eventSchema),
@@ -207,10 +195,10 @@ export default function CreateEventForm({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-12"
+                className="flex flex-col gap-8"
             >
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+                    <div className="mb-4 rounded-md border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400">
                         {error}
                     </div>
                 )}
@@ -256,7 +244,7 @@ export default function CreateEventForm({
                             name="date"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Date</FormLabel>
+                                    <FormLabel className="text-color-light-200">Date</FormLabel>
                                     <FormControl>
                                         <DateTimeInput
                                             type="date"
@@ -274,7 +262,7 @@ export default function CreateEventForm({
                             name="time"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Time</FormLabel>
+                                    <FormLabel className="text-color-light-200">Time</FormLabel>
                                     <FormControl>
                                         <DateTimeInput
                                             type="time"
@@ -292,10 +280,10 @@ export default function CreateEventForm({
                             name="mode"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Mode</FormLabel>
+                                    <FormLabel className="text-color-light-200">Mode</FormLabel>
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="border-color-border-dark bg-color-dark-100 text-white focus:border-color-blue focus:ring-color-blue">
                                                 <SelectValue placeholder="Select mode" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -319,7 +307,7 @@ export default function CreateEventForm({
                         name="price"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Price (₹)</FormLabel>
+                                <FormLabel className="text-color-light-200">Price (₹)</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -327,9 +315,10 @@ export default function CreateEventForm({
                                         {...field}
                                         min="0"
                                         step="1"
+                                        className="border-color-border-dark bg-color-dark-100 text-white placeholder-gray-500 focus:border-color-blue focus:ring-color-blue"
                                     />
                                 </FormControl>
-                                <p className="text-sm text-gray-400 mt-1">
+                                <p className="text-sm text-color-light-200 mt-1">
                                     {Number(field.value) === 0 ? "Free event" : `Paid event - ₹${field.value}`}
                                 </p>
                                 <FormMessage />
@@ -342,7 +331,7 @@ export default function CreateEventForm({
                 <Section title="Event Poster">
                     {mode === 'edit' && initialEvent?.image && (
                         <div className="mb-4">
-                            <p className="text-sm text-gray-400 mb-2">Current Image</p>
+                            <p className="text-sm text-color-light-200 mb-2">Current Image</p>
                             <img src={initialEvent.image} alt="Current" className="h-32 rounded-lg" />
                         </div>
                     )}
@@ -350,9 +339,10 @@ export default function CreateEventForm({
                         type="file"
                         accept="image/*"
                         onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+                        className="border-color-border-dark bg-color-dark-100 text-white focus:border-color-blue focus:ring-color-blue"
                     />
                     {mode === 'edit' && !image && (
-                        <p className="text-xs text-gray-400 mt-2">Leave empty to keep current image</p>
+                        <p className="text-xs text-color-light-200 mt-2">Leave empty to keep current image</p>
                     )}
                 </Section>
 
@@ -364,7 +354,7 @@ export default function CreateEventForm({
                     </TwoCol>
                 </Section>
 
-                <Button size="lg" className="text-black" disabled={loading}>
+                <Button size="lg" className="text-black bg-primary hover:bg-primary/90 disabled:opacity-50 font-semibold" disabled={loading}>
                     {loading ? (mode === 'edit' ? "Updating..." : "Creating...") : (mode === 'edit' ? "Update Event" : "Create Event")}
                 </Button>
             </form>
@@ -379,7 +369,7 @@ export default function CreateEventForm({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
         <div className="flex flex-col gap-6">
-            <h3>{title}</h3>
+            <h3 className="font-schibsted-grotesk text-2xl font-bold">{title}</h3>
             {children}
         </div>
     );
@@ -414,9 +404,9 @@ function TextField({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>{label}</FormLabel>
+                    <FormLabel className="text-color-light-200">{label}</FormLabel>
                     <FormControl>
-                        <Input {...field} value={field.value ?? ""} placeholder={placeholder} />
+                        <Input {...field} value={field.value ?? ""} placeholder={placeholder} className="border-color-border-dark bg-color-dark-100 text-white placeholder-gray-500 focus:border-color-blue focus:ring-color-blue" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -442,9 +432,9 @@ function TextAreaField({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>{label}</FormLabel>
+                    <FormLabel className="text-color-light-200">{label}</FormLabel>
                     <FormControl>
-                        <Textarea {...field} value={field.value ?? ""} rows={rows || 3} />
+                        <Textarea {...field} value={field.value ?? ""} rows={rows || 3} className="border-color-border-dark bg-color-dark-100 text-white placeholder-gray-500 focus:border-color-blue focus:ring-color-blue" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

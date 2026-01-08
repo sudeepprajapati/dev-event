@@ -16,10 +16,10 @@ export default function TagInput({ label, values, onChange }: any) {
 
     return (
         <div className="flex flex-col gap-4">
-            <label className="text-sm font-medium">{label}</label>
+            <label className="text-sm font-medium text-color-light-200">{label}</label>
 
             <div className="flex gap-2">
-                <Input value={input} onChange={(e) => setInput(e.target.value)} />
+                <Input value={input} onChange={(e) => setInput(e.target.value)} className="border-color-border-dark bg-color-dark-100 text-white placeholder-gray-500 focus:border-color-blue focus:ring-color-blue" />
                 <Button type="button" variant="secondary" onClick={add}>
                     Add
                 </Button>
@@ -29,11 +29,11 @@ export default function TagInput({ label, values, onChange }: any) {
                 {values.map((v: string, i: number) => (
                     <span
                         key={i}
-                        className="pill cursor-pointer hover:opacity-80"
+                        className="pill cursor-pointer hover:opacity-80 flex items-center gap-2"
                         onClick={() => onChange(values.filter((_: any, idx: number) => idx !== i))}
                     >
                         {v}
-                        <X className="h-3 w-3 ml-1" />
+                        <X className="h-3 w-3" />
                     </span>
                 ))}
             </div>
